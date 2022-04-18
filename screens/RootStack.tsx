@@ -3,7 +3,12 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import MainTab from './MainTab';
 import WriteScreen from './WriteScreen';
 
-const Stack = createNativeStackNavigator();
+export type RootStackParamList = {
+  MainTab: undefined;
+  Write: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const RootStack = () => {
   return (
@@ -13,7 +18,11 @@ const RootStack = () => {
         component={MainTab}
         options={{headerShown: false}}
       />
-      <Stack.Screen name="Write" component={WriteScreen} />
+      <Stack.Screen
+        name="Write"
+        component={WriteScreen}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };
