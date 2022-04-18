@@ -19,7 +19,16 @@ const LogContext = createContext<{
 export const LogContextProvider = ({
   children,
 }: React.PropsWithChildren<unknown>) => {
-  const [logs, setLogs] = useState<Array<Log>>([]);
+  const [logs, setLogs] = useState<Array<Log>>(
+    Array.from({length: 1})
+      .map((_, index) => ({
+        id: uuidv4(),
+        title: `Log ${index}`,
+        body: `Log ${index}`,
+        date: new Date().toISOString(),
+      }))
+      .reverse(),
+  );
 
   const onCreate = ({title, body, date}: LogRequest) => {
     const log: Log = {
