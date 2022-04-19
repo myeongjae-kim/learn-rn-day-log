@@ -1,6 +1,7 @@
-import React, {createContext, useState} from 'react';
+import React, {createContext, useEffect, useRef, useState} from 'react';
 import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
+import logsStorage from '../storages/logsStorage';
 
 export type Log = {
   id: string;
@@ -26,16 +27,8 @@ const LogContext = createContext<{
 export const LogContextProvider = ({
   children,
 }: React.PropsWithChildren<unknown>) => {
-  const [logs, setLogs] = useState<Array<Log>>(
-    Array.from({length: 1})
-      .map((_, index) => ({
-        id: uuidv4(),
-        title: `Log ${index}`,
-        body: `Log ${index}`,
-        date: new Date().toISOString(),
-      }))
-      .reverse(),
-  );
+  const initialLogsRef = useRef<Log[]>([]);
+  const [logs, setLogs] = useState<Log[]>([]);
 
   const onCreate = ({title, body, date}: LogRequest) => {
     const log: Log = {
@@ -54,6 +47,23 @@ export const LogContextProvider = ({
   };
 
   const onRemove = (id: string) => setLogs(logs.filter(log => log.id !== id));
+
+  useEffect(() => {
+    // useEffect 내에서 async 함수를 만들고 바로 호출
+    // IIFE 패턴
+    (async () => {
+      const savedLogs = await logsStorage.get();
+      initialLogsRef.current = savedLogs;
+      setLogs(savedLogs);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (logs === initialLogsRef.current) {
+      return;
+    }
+    logsStorage.set(logs).then();
+  }, [logs]);
 
   return (
     <LogContext.Provider value={{logs, onCreate, onModify, onRemove}}>
