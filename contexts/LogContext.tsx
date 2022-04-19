@@ -14,7 +14,8 @@ export type LogRequest = Omit<Log, 'id'>;
 const LogContext = createContext<{
   logs: Array<Log>;
   onCreate(log: LogRequest): void;
-}>({logs: [], onCreate: (_log: LogRequest) => {}});
+  onModify(modified: Log): void;
+}>({logs: [], onCreate: (_log: LogRequest) => {}, onModify(_modified: Log) {}});
 
 export const LogContextProvider = ({
   children,
@@ -40,8 +41,14 @@ export const LogContextProvider = ({
     setLogs([log, ...logs]);
   };
 
+  const onModify = (modified: Log) => {
+    // logs 배열을 순회해 id가 일치하면 log를 교체하고 그렇지 않으면 유지
+    const nextLogs = logs.map(log => (log.id === modified.id ? modified : log));
+    setLogs(nextLogs);
+  };
+
   return (
-    <LogContext.Provider value={{logs, onCreate}}>
+    <LogContext.Provider value={{logs, onCreate, onModify}}>
       {children}
     </LogContext.Provider>
   );

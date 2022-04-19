@@ -9,19 +9,29 @@ import WriteHeader from '../components/WriteHeader';
 import WriteEditor from '../components/WriteEditor';
 import {useNavigation} from '@react-navigation/native';
 import LogContext from '../contexts/LogContext';
+import {RootStackParamList} from './RootStack';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-const WriteScreen = () => {
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
+type Props = NativeStackScreenProps<RootStackParamList, 'Write'>;
+
+const WriteScreen = (props: Props) => {
+  const log = props.route.params?.log;
+
+  const [title, setTitle] = useState(log?.title ?? '');
+  const [body, setBody] = useState(log?.body ?? '');
   const navigation = useNavigation();
 
-  const {onCreate} = useContext(LogContext);
+  const {onCreate, onModify} = useContext(LogContext);
   const onSave = () => {
-    onCreate({
-      title,
-      body,
-      date: new Date().toISOString(),
-    });
+    if (log) {
+      onModify({...log, title, body});
+    } else {
+      onCreate({
+        title,
+        body,
+        date: new Date().toISOString(),
+      });
+    }
     navigation.goBack();
   };
 

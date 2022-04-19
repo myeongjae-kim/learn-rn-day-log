@@ -1,15 +1,15 @@
 import React, {useEffect, useRef} from 'react';
 import {Animated, Platform, Pressable, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {RootStackParamList} from '../screens/RootStack';
+import {useNavigation} from '@react-navigation/native';
+import {RootNavigationProps} from '../screens/RootStack';
 
 type Props = {
   hidden: boolean;
 };
 
 const FloatingWriteButton = ({hidden}: Props) => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<RootNavigationProps>();
 
   const onPress = () => {
     navigation.navigate('Write');
