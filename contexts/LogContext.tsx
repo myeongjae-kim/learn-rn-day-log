@@ -15,7 +15,13 @@ const LogContext = createContext<{
   logs: Array<Log>;
   onCreate(log: LogRequest): void;
   onModify(modified: Log): void;
-}>({logs: [], onCreate: (_log: LogRequest) => {}, onModify(_modified: Log) {}});
+  onRemove(id: string): void;
+}>({
+  logs: [],
+  onCreate: (_log: LogRequest) => {},
+  onModify(_modified: Log) {},
+  onRemove(_id: string) {},
+});
 
 export const LogContextProvider = ({
   children,
@@ -47,8 +53,10 @@ export const LogContextProvider = ({
     setLogs(nextLogs);
   };
 
+  const onRemove = (id: string) => setLogs(logs.filter(log => log.id !== id));
+
   return (
-    <LogContext.Provider value={{logs, onCreate, onModify}}>
+    <LogContext.Provider value={{logs, onCreate, onModify, onRemove}}>
       {children}
     </LogContext.Provider>
   );

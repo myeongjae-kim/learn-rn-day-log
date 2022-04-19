@@ -1,5 +1,6 @@
 import React, {useContext, useState} from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -21,7 +22,7 @@ const WriteScreen = (props: Props) => {
   const [body, setBody] = useState(log?.body ?? '');
   const navigation = useNavigation();
 
-  const {onCreate, onModify} = useContext(LogContext);
+  const {onCreate, onModify, onRemove} = useContext(LogContext);
   const onSave = () => {
     if (log) {
       onModify({...log, title, body});
@@ -35,12 +36,30 @@ const WriteScreen = (props: Props) => {
     navigation.goBack();
   };
 
+  const onAskRemove = () => {
+    Alert.alert('삭제', '정말로 삭제하시겠어요?', [
+      {text: '취소', style: 'cancel'},
+      {
+        text: '삭제',
+        onPress: () => {
+          onRemove(log?.id ?? '');
+          navigation.goBack();
+        },
+        style: 'destructive',
+      },
+    ]);
+  };
+
   return (
     <SafeAreaView style={styles.block}>
       <KeyboardAvoidingView
         style={styles.avoidingView}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <WriteHeader onSave={onSave} />
+        <WriteHeader
+          onSave={onSave}
+          onAskRemove={onAskRemove}
+          isEditing={!!log}
+        />
         <WriteEditor
           title={title}
           body={body}
