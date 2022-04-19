@@ -9,9 +9,13 @@ import {
 import {Log} from '../contexts/LogContext';
 import FeedListItem from './FeedListItem';
 
-type Props = {logs: Log[]; onScrolledToBottom?(hidden: boolean): void};
+type Props = {
+  logs: Log[];
+  ListHeaderComponent: React.ReactElement;
+  onScrolledToBottom?(hidden: boolean): void;
+};
 
-const FeedList = ({logs, onScrolledToBottom}: Props) => {
+const FeedList = ({logs, onScrolledToBottom, ListHeaderComponent}: Props) => {
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (!onScrolledToBottom) {
       return;
@@ -39,6 +43,7 @@ const FeedList = ({logs, onScrolledToBottom}: Props) => {
       keyExtractor={log => log.id}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
       onScroll={onScroll}
+      ListHeaderComponent={ListHeaderComponent}
     />
   );
 };
